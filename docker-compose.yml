@@ -1,0 +1,16 @@
+version: "3"
+services:
+  app-logger:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app-logger
+    environment:
+      PYTHONDONTWRITEBYTECODE: 1
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      - .:/app
+    
