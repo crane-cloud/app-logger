@@ -59,5 +59,4 @@ make start-local
 `make` is a build automation tool that is used to manage the build process of a software project.
 
 - In the project directory, running `make` shows you a list of commands to use.
-- Run `make start` to start the application and required services.
-- Run `make connect-to-container` to connect to the Flask application container after running `make start`.
+- Run `start-docker-services` to start the application and required services.

@@ -10,7 +10,7 @@ build-image: ## Build docker image
 	@ ${INFO} "Image succesfully built"
 	@ echo " "
 
-start-docker:build-image ## Start server
+start-docker-services:build-image ## Start server
 	@ ${INFO} "starting local development server"
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) up
 
