@@ -10,9 +10,13 @@ build-image: ## Build docker image
 	@ ${INFO} "Image succesfully built"
 	@ echo " "
 
-start:build-image ## Start development server
+start-docker:build-image ## Start server
 	@ ${INFO} "starting local development server"
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) up
+
+start-local:
+	uvicorn main:app --reload 
+	@ ${INFO} "starting local development server"
 
 
 # set default target

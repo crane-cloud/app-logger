@@ -1,0 +1,37 @@
+from jsonschema import validate
+import config
+from typing import List, Optional
+from pydantic import BaseModel
+
+
+# class Log(BaseModel):
+#     def __init__(self, data):
+#         # self.validate(data)
+#         for key, value in data.items():
+#             setattr(self, key, value)
+
+#     def validate(self, data):
+#         try:
+#             validate(data, config.LOG_FORMAT_SCHEMA)
+#         except Exception as e:
+#             raise ValueError(f"Invalid log data: {e}")
+
+
+class Log(BaseModel):
+    user_id: str
+    user_email: Optional[str] = None
+    user_name: Optional[str] = None
+    creation_date: str
+    operation: str
+    model: str
+    status: str
+    description: Optional[str] = None
+    a_user_id: Optional[str] = None
+    a_db_id: Optional[str] = None
+    a_app_id: Optional[str] = None
+    a_project_id: Optional[str] = None
+    a_cluster_id: Optional[str] = None
+
+
+class LogGetResponse(BaseModel):
+    id: str
