@@ -11,7 +11,6 @@ try:
 except Exception as e:
     print(e)
 
-
 database = client.get_database("activity-logs")
 
 
