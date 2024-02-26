@@ -48,27 +48,16 @@ async def get_logs(operation: str, status: str, model: str,
         if model:
             all_filters.append({"model": model})
 
-        if start and end:
+        if start:
             all_filters.append({
                 "creation_date": {
-                    "$and": [
-                        {"$gte": datetime.combine(datetime.strptime(
-                            start, "%Y-%m-%d"), datetime.min.time()).isoformat(' ')},
-                        {"$lte": datetime.combine(datetime.strptime(
-                            end, "%Y-%m-%d"), datetime.max.time()).isoformat(' ')},
-                    ]
+                    "$gte": datetime.strptime(start, "%Y-%m-%d")
                 }
             })
-        elif start:
+        if end:
             all_filters.append({
                 "creation_date": {
-                    "$gte": datetime.combine(datetime.strptime(start, "%Y-%m-%d"), datetime.min.time()).isoformat(' ')
-                }
-            })
-        elif end:
-            all_filters.append({
-                "creation_date": {
-                    "$lte": datetime.combine(datetime.strptime(end, "%Y-%m-%d"), datetime.max.time()).isoformat(' ')
+                    "$lte": datetime.strptime(end, "%Y-%m-%d")
                 }
             })
 
@@ -76,7 +65,6 @@ async def get_logs(operation: str, status: str, model: str,
             filters["$and"] = all_filters
 
         collection = await get_log_collection()
-
         results = collection.find(filters)
 
         serialized_results = json.loads(json_util.dumps(results))
