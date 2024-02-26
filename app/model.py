@@ -23,7 +23,7 @@ class Log(BaseModel):
     user_id: str
     user_email: Optional[str] = None
     user_name: Optional[str] = None
-    creation_date: Optional[datetime.date] = datetime.datetime.now().date()
+    creation_date: Optional[datetime.datetime]
     operation: str
     model: str
     status: str

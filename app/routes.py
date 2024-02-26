@@ -44,3 +44,8 @@ async def get_logs(
         a_app_id=a_app_id,
         start=start,
         end=end)
+
+
+@router.get("/logs/{log_id}", response_model=Log)
+async def get_log(log_id: str) -> Log:
+    return await controllers.get_log(log_id)
