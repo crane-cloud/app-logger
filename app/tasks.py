@@ -1,14 +1,18 @@
 import os
-from celery import Celery
-
-redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
-celery_app = Celery(__name__,
-                    broker=redis_url,
-                    backend=redis_url,
-                    include=['app.tasks'])
+from celery import shared_task
+from celery import current_app as current_celery_app
+from config import settings
 
 
-@celery_app.task
+def create_celery():
+    celery_app = current_celery_app
+    # prefixed with CELERY_
+    celery_app.config_from_object(settings, namespace="CELERY")
+
+    return celery_app
+
+
+@shared_task
 def hello():
     print('hello')
     return 'hello'
