@@ -6,7 +6,7 @@ authors = ["khalifan-kfan <khalifanmuwonge@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 fastapi = "^0.109.2"
 uvicorn = "^0.27.1"
 pydantic-settings = "^2.1.0"

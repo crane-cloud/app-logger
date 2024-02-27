@@ -11,7 +11,7 @@ services:
       MONGO_URI: mongodb://localhost:27017/ 
       MONGO_PORT: 27017 
     ports:
-      - "8000:8000"
+      - "${APP_PORT:-8000}:8000"
     volumes:
       - .:/app
 
@@ -22,11 +22,12 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME  
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD  
+      MONGO_PORT: 27001
     ports:
-      - 27017:27017
+      - "${MONGO_PORT:-27001}:27017"
     volumes:
-      - mongo-data:/data/db
+      - cc-logger-mongo-data:/data/db
 
 
 volumes:
-  mongo-data:  
+  cc-logger-mongo-data:  

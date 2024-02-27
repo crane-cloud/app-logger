@@ -6,19 +6,6 @@ import datetime
 from fastapi import FastAPI, Header, Query, HTTPException
 
 
-# class Log(BaseModel):
-#     def __init__(self, data):
-#         # self.validate(data)
-#         for key, value in data.items():
-#             setattr(self, key, value)
-
-#     def validate(self, data):
-#         try:
-#             validate(data, config.LOG_FORMAT_SCHEMA)
-#         except Exception as e:
-#             raise ValueError(f"Invalid log data: {e}")
-
-
 class Log(BaseModel):
     user_id: str
     user_email: Optional[str] = None
