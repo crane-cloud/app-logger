@@ -26,7 +26,7 @@ class LogGetResponse(BaseModel):
     id: str
 
 
-class LogsFilters(BaseModel):
+class activitiesFilters(BaseModel):
     operation: Optional[str] = Query(None, description="Operation")
     status: Optional[str] = Query(None, description="Status")
     model: Optional[str] = Query(None, description="Model")

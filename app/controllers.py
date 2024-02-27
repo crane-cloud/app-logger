@@ -1,8 +1,7 @@
 from typing import List
 from fastapi import HTTPException
-
-from app.database import get_log_collection
-from app.model import Log, LogsFilters
+from app.database import get_collection, get_log_collection
+from app.model import Log
 from bson import json_util
 from bson.objectid import ObjectId
 import json
@@ -10,24 +9,9 @@ import json
 from datetime import datetime
 
 
-async def add_log(data: dict = {}) -> bool:
-    try:
-        collection = await get_log_collection()
-        log = Log(**data.dict())
-        # print(**log.dict())
-        log.creation_date = datetime.now()
-        added_item = collection.insert_one(log.dict())
-        print(added_item)
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail={
-                            "message": "Internal server error"})
-    return True
-
-
-async def get_logs(operation: str, status: str, model: str,
-                   a_project_id: str, a_cluster_id: str, a_db_id: str, a_user_id: str,
-                   a_app_id: str, start: str, end: str) -> List[dict]:
+async def get_activities(operation: str, status: str, model: str,
+                         a_project_id: str, a_cluster_id: str, a_db_id: str, a_user_id: str,
+                         a_app_id: str, start: str, end: str) -> List[dict]:
     try:
         filters = {}
         all_filters = []
@@ -64,8 +48,7 @@ async def get_logs(operation: str, status: str, model: str,
         if all_filters:
             filters["$and"] = all_filters
 
-        collection = await get_log_collection()
-        results = collection.find(filters)
+        results = get_collection().find(filters)
 
         serialized_results = json.loads(json_util.dumps(results))
 
@@ -79,8 +62,7 @@ async def get_logs(operation: str, status: str, model: str,
 
 async def get_log(log_id: str):
     try:
-        collection = await get_log_collection()
-        log = collection.find_one({"_id": ObjectId(log_id)})
+        log = get_collection().find_one({"_id": ObjectId(log_id)})
         if not log:
             raise HTTPException(status_code=404, detail={
                                 "message": "Log not found"})

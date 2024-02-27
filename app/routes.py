@@ -4,7 +4,7 @@ import app.controllers as controllers
 from app.model import Log
 from fastapi import Query
 from typing import Optional
-from app.tasks import hello
+from app.tasks import add_activity_task, hello
 
 
 router = APIRouter()
@@ -17,8 +17,9 @@ async def index():
 
 
 @router.post("/logs")
-async def add_log(data: Log = Body(...)):
-    return await controllers.add_log(data)
+def add_log(data: Log = Body(...)):
+    add_activity_task.delay(data.dict())
+    return {"message": "Log added successfully"}
 
 
 @router.get("/logs")
