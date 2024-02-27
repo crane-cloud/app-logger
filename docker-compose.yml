@@ -2,32 +2,35 @@ version: "3.8"
 services:
   app-logger:
     restart: always
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: app-logger
     environment:
       PYTHONDONTWRITEBYTECODE: 1
       PYTHONUNBUFFERED: 1
-      APP_PORT: 8000  
-      MONGO_URI: mongodb://localhost:27017/ 
-      MONGO_PORT: 27017 
+      MONGO_URI: ${MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/admin}
     ports:
       - "${APP_PORT:-8000}:8000"
     volumes:
       - .:/app
+    depends_on:
+      - logger-mongo-db
+    links:
+      - logger-mongo-db
 
 
-  mongo:
+  logger-mongo-db:
     image: mongo:latest
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME  
-      MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD  
-      MONGO_PORT: 27001
+      MONGO_INITDB_ROOT_USERNAME: crane-logger
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGODB_DATA_DIR: /data/db
     ports:
       - "${MONGO_PORT:-27001}:27017"
     volumes:
-      - cc-logger-mongo-data:/data/db
-
+      - logger-mongo-data:/data/db
 
 volumes:
-  cc-logger-mongo-data:  
+  logger-mongo-data:  
