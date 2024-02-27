@@ -1,12 +1,10 @@
-from jsonschema import validate
-import config
-from typing import List, Optional
+from typing import Optional
 from pydantic import BaseModel
 import datetime
-from fastapi import FastAPI, Header, Query, HTTPException
+from fastapi import Query
 
 
-class Log(BaseModel):
+class Activity(BaseModel):
     user_id: str
     user_email: Optional[str] = None
     user_name: Optional[str] = None
@@ -22,11 +20,11 @@ class Log(BaseModel):
     a_cluster_id: Optional[str] = None
 
 
-class LogGetResponse(BaseModel):
+class ActivityGetResponse(BaseModel):
     id: str
 
 
-class activitiesFilters(BaseModel):
+class ActivitiesFilters(BaseModel):
     operation: Optional[str] = Query(None, description="Operation")
     status: Optional[str] = Query(None, description="Status")
     model: Optional[str] = Query(None, description="Model")

@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import HTTPException
-from app.database import get_collection, get_log_collection
-from app.model import Log
+from app.database import get_collection
+from app.model import Activity
 from bson import json_util
 from bson.objectid import ObjectId
 import json
@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 
-async def get_activities(operation: str, status: str, model: str,
+def get_activities(operation: str, status: str, model: str,
                          a_project_id: str, a_cluster_id: str, a_db_id: str, a_user_id: str,
                          a_app_id: str, start: str, end: str) -> List[dict]:
     try:
@@ -60,13 +60,13 @@ async def get_activities(operation: str, status: str, model: str,
                             "message": "Internal server error"})
 
 
-async def get_log(log_id: str):
+def get_single_activity(activity_id: str):
     try:
-        log = get_collection().find_one({"_id": ObjectId(log_id)})
-        if not log:
+        activity = get_collection().find_one({"_id": ObjectId(activity_id)})
+        if not activity:
             raise HTTPException(status_code=404, detail={
-                                "message": "Log not found"})
-        return Log(**log)
+                                "message": "activity not found"})
+        return Activity(**activity)
     except HTTPException as e:
         raise e
     except Exception as e:
