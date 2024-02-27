@@ -1,12 +1,19 @@
 from fastapi import APIRouter, Body
 
 import app.controllers as controllers
-from app.model import Log, LogGetResponse
-from fastapi import FastAPI, Header, Query, HTTPException
+from app.model import Log
+from fastapi import Query
 from typing import Optional
+from app.tasks import hello
 
 
 router = APIRouter()
+
+
+@router.get("/")
+async def index():
+    hello.delay()
+    return {"message": "Hello, world"}
 
 
 @router.post("/logs")

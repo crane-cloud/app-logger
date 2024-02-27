@@ -14,6 +14,10 @@ start:build-image ## Start server
 	@ ${INFO} "starting local development server"
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) up
 
+connect-to-container:build-image ## Connect to a container
+	@ ${INFO} "Connecting to a container"
+	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) exec app-logger /bin/bash
+
 
 
 # set default target
