@@ -1,21 +1,29 @@
 from fastapi import APIRouter, Body
 
 import app.controllers as controllers
-from app.model import Log, LogGetResponse
-from fastapi import FastAPI, Header, Query, HTTPException
+from app.model import Activity
+from fastapi import Query
 from typing import Optional
+from app.tasks import add_activity_task, hello
 
 
 router = APIRouter()
 
 
-@router.post("/logs")
-async def add_log(data: Log = Body(...)):
-    return await controllers.add_log(data)
+@router.get("/")
+async def index():
+    hello.delay()
+    return {"message": "Hello, world"}
 
 
-@router.get("/logs")
-async def get_logs(
+@router.post("/activities")
+def add_activity(data: Activity = Body(...)):
+    add_activity_task.delay(data.dict())
+    return {"message": "activity added successfully"}
+
+
+@router.get("/activities")
+def get_activities(
         operation: Optional[str] = Query(
             None, description="Operation"),
         status: Optional[str] = Query(None, description="Status"),
@@ -33,7 +41,7 @@ async def get_logs(
             None, description="Start date"),
         end: Optional[str] = Query(None, description="End date")):
 
-    return await controllers.get_logs(
+    return controllers.get_activities(
         operation=operation,
         status=status,
         model=model,
@@ -46,6 +54,6 @@ async def get_logs(
         end=end)
 
 
-@router.get("/logs/{log_id}", response_model=Log)
-async def get_log(log_id: str) -> Log:
-    return await controllers.get_log(log_id)
+@router.get("/activities/{activity_id}", response_model=Activity)
+def get_activity(activity_id: str) -> Activity:
+    return controllers.get_single_activity(activity_id)

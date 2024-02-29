@@ -10,6 +10,7 @@ services:
       PYTHONDONTWRITEBYTECODE: 1
       PYTHONUNBUFFERED: 1
       MONGO_URI: ${MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/admin}
+      REDIS_URL: ${REDIS_URL:-redis://logger-redis-db:6379}
     ports:
       - "${APP_PORT:-8000}:8000"
     volumes:
@@ -19,6 +20,28 @@ services:
     links:
       - logger-mongo-db
 
+  logger-celery-worker:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logger-celery-worker
+    command: poetry run celery -A main.celery worker --loglevel=info
+    environment:
+      PYTHONDONTWRITEBYTECODE: 1
+      PYTHONUNBUFFERED: 1
+      MONGO_URI: ${MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/admin}
+      REDIS_URL: ${REDIS_URL:-redis://logger-redis-db:6379}
+    ports:
+      - "${CELERY_APP_PORT:-8500}:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - logger-mongo-db
+      - logger-redis-db
+    links:
+      - logger-mongo-db
+      - logger-redis-db
 
   logger-mongo-db:
     image: mongo:latest
@@ -32,5 +55,24 @@ services:
     volumes:
       - logger-mongo-data:/data/db
 
+  logger-redis-db:
+    image: redis:latest
+    container_name: logger-redis-db
+    ports:
+      - "6380:6379"
+    volumes:
+      - loggerredisdbdata:/data
+  
+  # Celery dashboard
+  logger-flower:
+    image: mher/flower
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=redis://logger-redis-db:6379/0 
+    depends_on:
+      - logger-redis-db
+
 volumes:
-  logger-mongo-data:  
+  logger-mongo-data:
+  loggerredisdbdata:
