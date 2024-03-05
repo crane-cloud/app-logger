@@ -21,10 +21,6 @@ def authenticate(fn):
         except JWKError:
             raise HTTPException(status_code=401, detail="There is an error with the JWT verification salt.")
 
-
-        if (not payload['fresh']):
-            raise HTTPException(status_code=409, detail="The authentication session is currently expired.")
-
             
         return fn(*args, **kwargs)
     return wrapper
