@@ -33,10 +33,11 @@ services:
       PYTHONUNBUFFERED: 1
       MONGO_URI: ${MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/admin}
       REDIS_URL: ${REDIS_URL:-redis://logger-redis-db:6379}
+      JWT_SALT: ${JWT_SALT:-salt}
     ports:
       - "${CELERY_APP_PORT:-8500}:8000"
     volumes:
-      - .:/app
+      - .:/celery-app
     depends_on:
       - logger-mongo-db
       - logger-redis-db
