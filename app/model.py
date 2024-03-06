@@ -2,11 +2,12 @@ from typing import Optional
 from pydantic import BaseModel
 import datetime
 from fastapi import Query
+from pydantic import BaseModel, EmailStr
 
 
 class Activity(BaseModel):
     user_id: str
-    user_email: Optional[str] = None
+    user_email: Optional[EmailStr] = None
     user_name: Optional[str] = None
     creation_date: Optional[datetime.datetime]
     operation: str
