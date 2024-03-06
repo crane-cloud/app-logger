@@ -11,6 +11,7 @@ services:
       PYTHONUNBUFFERED: 1
       MONGO_URI: ${MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/admin}
       REDIS_URL: ${REDIS_URL:-redis://logger-redis-db:6379}
+      JWT_SALT: ${JWT_SALT:-salt}
     ports:
       - "${APP_PORT:-8000}:8000"
     volumes:
