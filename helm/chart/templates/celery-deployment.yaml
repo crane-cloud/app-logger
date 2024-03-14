@@ -1,3 +1,4 @@
+{{- if .Values.celery.create -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,12 +37,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - "celery"
-            - "-A"
-            - "server.celery"
-            - "worker"
-            - "--loglevel=info"
+          command: {{ .Values.celery.command | toYaml | nindent 12}}
           env:
           - name: test
             value: test
@@ -51,7 +47,8 @@ spec:
           {{- end }}
           ports:
             - name: celery-worker
-              containerPort: 5001
+              containerPort: {{ .Values.celery.port }}
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+{{- end }}

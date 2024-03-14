@@ -80,4 +80,8 @@ environment:
 
 
 celery:
-  replicaCount: 1
+  create: false
+  command: 
+    - "python"
+    - "run"
+  port: 5002

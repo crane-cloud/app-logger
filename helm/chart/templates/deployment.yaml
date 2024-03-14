@@ -46,14 +46,6 @@ spec:
             - name: backend-api
               containerPort: 8000
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: backend-api
-          readinessProbe:
-            httpGet:
-              path: /
-              port: backend-api
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
         - name: nginx

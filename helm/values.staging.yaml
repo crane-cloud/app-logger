@@ -1,14 +1,13 @@
 replicaCount: 2
 
 image:
-  repository: gcr.io/crane-cloud-274413/cranecloud-backend
+  repository: gcr.io/crane-cloud-274413/cranecloud-activity-logger
   pullPolicy: Always
   tag: ${{ DOCKER_IMAGE_TAG }}
 
 imagePullSecrets: []
 
 nameOverride: "app-logger"
-nameOverride: ""
 
 serviceAccount:
   create: false
@@ -61,3 +60,15 @@ environment:
   MONGO_URI: ${{ MONGO_URI }}
   FASTAPI_ENV: production
   REDIS_URL: redis://redis:6379
+
+celery:
+  create: true
+  command: 
+    - "poetry"
+    - "run"
+    - "celery"
+    - "-A"
+    - "main.celery"
+    - "worker"
+    - "--loglevel=info"
+  port: 5001

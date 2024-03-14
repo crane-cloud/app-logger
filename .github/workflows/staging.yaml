@@ -44,7 +44,7 @@ jobs:
         with:
           flavor: |
             latest=true
-          images: gcr.io/crane-cloud-274413/cranecloud-backend
+          images: gcr.io/crane-cloud-274413/cranecloud-activity-logger
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -56,7 +56,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           context: .
-          file: docker/prod/Dockerfile
           labels: ${{ steps.meta.outputs.labels }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -112,9 +111,8 @@ jobs:
 
       - name: Helm Release
         run: |
-          helm upgrade \
-          --install \
-          app-logger ./helm/chart \
+          helm upgrade --install \
+          activity-logger ./helm/chart \
           --values helm/values.staging.yaml \
           --namespace cranecloud-microservice \
           --set image.tag="${{ needs.build.outputs.tag }}" \
@@ -124,4 +122,4 @@ jobs:
 
       - name: Monitor Rollout
         run: |
-          kubectl rollout status deployment/app-logger --timeout=300s --namespace cranecloud-microservice
+          kubectl rollout status deployment/activity-logger --timeout=300s --namespace cranecloud-microservice
