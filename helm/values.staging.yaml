@@ -1,0 +1,63 @@
+replicaCount: 2
+
+image:
+  repository: gcr.io/crane-cloud-274413/cranecloud-backend
+  pullPolicy: Always
+  tag: ${{ DOCKER_IMAGE_TAG }}
+
+imagePullSecrets: []
+
+nameOverride: "app-logger"
+nameOverride: ""
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: NodePort
+  port: 80
+
+resources: {}
+  # limits:
+  #   cpu: 512m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 512m
+  #   memory: 512Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+nginxConf:
+  server {
+        listen 80;
+
+        location / {
+            proxy_pass http://localhost:5000/;
+        }
+    }
+
+environment:
+  DATABASE_URI: ${{ DATABASE_URL }}
+  JWT_SALT: ${{ JWT_SALT }}
+  MONGO_URI: ${{ MONGO_URI }}
+  FASTAPI_ENV: production
+  REDIS_URL: redis://redis:6379
