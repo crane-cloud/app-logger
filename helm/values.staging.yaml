@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: gcr.io/crane-cloud-274413/cranecloud-activity-logger
@@ -55,7 +55,6 @@ nginxConf:
     }
 
 environment:
-  DATABASE_URI: ${{ DATABASE_URL }}
   JWT_SALT: ${{ JWT_SALT }}
   MONGO_URI: ${{ MONGO_URI }}
   FASTAPI_ENV: production
