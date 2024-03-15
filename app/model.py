@@ -9,7 +9,7 @@ class Activity(BaseModel):
     user_id: str
     user_email: Optional[EmailStr] = None
     user_name: Optional[str] = None
-    creation_date: Optional[datetime.datetime.date]
+    creation_date: Optional[str]
     operation: str
     model: str
     status: str
