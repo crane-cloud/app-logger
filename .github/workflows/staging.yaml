@@ -116,7 +116,7 @@ jobs:
           --values helm/values.staging.yaml \
           --namespace cranecloud-microservice \
           --set image.tag="${{ needs.build.outputs.tag }}" \
-          --set environment.MONGO_URI="${{ secrets.STAGING_AMONGO_URI }}" \
+          --set environment.MONGO_URI="${{ secrets.STAGING_MONGO_URI }}" \
           --set environment.JWT_SALT="${{ secrets.STAGING_JWT_SALT }}" \
           --timeout=300s
 
