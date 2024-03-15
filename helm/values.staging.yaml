@@ -50,7 +50,7 @@ nginxConf:
         listen 80;
 
         location / {
-            proxy_pass http://localhost:5000/;
+            proxy_pass http://localhost:8000/;
         }
     }
 
