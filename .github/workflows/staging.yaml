@@ -1,0 +1,112 @@
+---
+name: staging
+
+on:
+  push:
+    branches:
+      - develop
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    outputs:
+      image: ${{ steps.export.outputs.image }}
+      tag: ${{ steps.export.outputs.tag }}
+
+    runs-on: ubuntu-latest
+    env:
+      image: cranecloud/activity-logger
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install (Buildx)
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - id: meta
+        name: Tag
+        uses: docker/metadata-action@v3
+        with:
+          flavor: |
+            latest=true
+          images: ${{ env.image }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+
+      - name: Build
+        uses: docker/build-push-action@v2
+        with:
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          context: .
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+      - id: export
+        name: Export
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const metadata = JSON.parse(`${{ steps.meta.outputs.json }}`)
+            const fullUrl = metadata.tags.find((t) => t.includes(':sha-'))
+            if (fullUrl == null) {
+              core.error('Unable to find sha tag of image')
+            } else {
+              const tag = fullUrl.split(':')[1]
+              core.setOutput('image', fullUrl)
+              core.setOutput('tag', tag)
+            }
+
+  Staging:
+    name: Deploy (Staging)
+
+    needs:
+      - Build
+
+    runs-on: ubuntu-latest
+    env:
+      namespace: cranecloud-microservice
+      image: cranecloud/activity-logger
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.RENU_KUBECONFIG}}
+
+      - name: Install kubectl
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y kubectl
+
+      # - name: Add Repo (cranecloud-backend)
+      #   run: |
+      #     helm repo add cranecloud-backend https://crane-cloud.github.io/helm-charts/
+
+      - name: Helm Release
+        run: |
+          helm upgrade --install \
+          activity-logger ./helm/chart \
+          --values helm/values.staging.yaml \
+          --namespace $namespace \
+          --set image.tag="${{ needs.build.outputs.tag }}" \
+          --set environment.MONGO_URI="${{ secrets.STAGING_MONGO_URI }}" \
+          --set environment.JWT_SALT="${{ secrets.STAGING_JWT_SALT }}" \
+          --timeout=300s
+
+      - name: Monitor Rollout
+        run: |
+          kubectl rollout status deployment/activity-logger --timeout=300s --namespace $namespace
