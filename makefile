@@ -29,7 +29,7 @@ build-testing-image: ## Build docker image
 
 test:build-testing-image ## Run tests
 	@ ${INFO} "Running tests"
-	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) exec app-logger  poetry run pytest
+	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) exec app-logger  poetry run pytest -x -vv --cov=. --cov-report=term-missing
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) stop app-logger logger-celery-worker logger-mongo-db logger-redis-db 
 
 
