@@ -26,8 +26,11 @@ jobs:
       - name: Install (Buildx)
         uses: docker/setup-buildx-action@v1
 
-      - name: Set up Docker configuration file
-        run: echo "${{ secrets.DOCKER_CONFIG }}" | base64 --decode > ~/.docker/config.json
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - id: meta
         name: Tag
@@ -35,7 +38,7 @@ jobs:
         with:
           flavor: |
             latest=true
-          images: $image
+          images: ${{ env.image }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -74,7 +77,6 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      KUBECONFIG: ${{ secrets.RENU_KUBECONFIG }}
       namespace: cranecloud-microservice
       image: cranecloud/activity-logger
 
@@ -82,10 +84,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo $KUBECONFIG > ~/.kube/config
+      - uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.RENU_KUBECONFIG}}
 
       - name: Install kubectl
         run: |

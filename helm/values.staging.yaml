@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: gcr.io/crane-cloud-274413/cranecloud-activity-logger
+  repository: cranecloud/activity-logger
   pullPolicy: Always
   tag: ${{ DOCKER_IMAGE_TAG }}
 
