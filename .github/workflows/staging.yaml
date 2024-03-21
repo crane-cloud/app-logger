@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - develop
+      - ft-add-mongo-deployment
 
   workflow_dispatch:
 

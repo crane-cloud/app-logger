@@ -88,5 +88,12 @@ celery:
 
 redis:
   create: false
+  replicas: 1
   port: 6379
+  storage: 1Gi
+
+mongo:
+  create: false
+  replicas: 1
+  port: 27017
   storage: 1Gi
