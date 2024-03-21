@@ -8,7 +8,6 @@ from app.tasks import add_activity_task, hello
 
 from app.helpers.decorators import admin_required, authenticate
 
-
 router = APIRouter()
 
 
@@ -59,6 +58,7 @@ def get_activities(
         end=end)
 
 
+# unused route
 @router.get("/activities/{activity_id}", response_model=Activity)
 def get_activity(activity_id: str) -> Activity:
     return controllers.get_single_activity(activity_id)

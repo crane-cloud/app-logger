@@ -2,6 +2,8 @@ FROM python:3.10
 
 WORKDIR /app
 
+ARG FASTAPI_ENV='development'
+
 ENV DEBIAN_FRONTEND='noninteractive'
 
 RUN apt-get update && apt install -y curl
@@ -23,6 +25,9 @@ COPY . /app
 COPY . /celery-app
 
 EXPOSE 8000
+
+ENV FASTAPI_ENV $FASTAPI_ENV
+
 
 CMD ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 

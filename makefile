@@ -18,6 +18,20 @@ connect-to-container:build-image ## Connect to a container
 	@ ${INFO} "Connecting to a container"
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) exec app-logger /bin/bash
 
+build-testing-image: ## Build docker image
+	@ ${INFO} "Building testing docker images"
+	@ export FASTAPI_ENV='testing' 
+	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) build --build-arg FASTAPI_ENV=testing app-logger 
+	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) up -d app-logger logger-celery-worker logger-mongo-db logger-redis-db
+	@ sleep 2 
+	@ ${INFO} "Image succesfully built"
+	@ echo " "
+
+test:build-testing-image ## Run tests
+	@ ${INFO} "Running tests"
+	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) exec app-logger  poetry run pytest
+	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) stop app-logger logger-celery-worker logger-mongo-db logger-redis-db 
+
 
 
 # set default target

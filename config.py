@@ -1,6 +1,6 @@
 import os
-import os
 from functools import lru_cache
+
 
 class BaseConfig:
     MONGO_URI: str = os.getenv("MONGO_URI")
@@ -13,6 +13,7 @@ class BaseConfig:
 class DevelopmentConfig(BaseConfig):
     MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
     REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+    FASTAPI_ENV = os.getenv("FASTAPI_ENV", "development")
 
 
 class ProductionConfig(BaseConfig):
@@ -20,7 +21,10 @@ class ProductionConfig(BaseConfig):
 
 
 class TestingConfig(BaseConfig):
-    pass
+    MONGO_URI = os.getenv(
+        "MONGO_URI", "mongodb://localhost:27017/")
+    REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+    FASTAPI_ENV = os.getenv("FASTAPI_ENV", "testing")
 
 
 @lru_cache()
