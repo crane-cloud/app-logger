@@ -20,7 +20,8 @@ spec:
         - name: mongo
           image: mongo:latest
           ports:
-            - containerPort: {{ .Values.mongo.port }}
+            - containerPort: 27017
+              name: mongo
           volumeMounts:
             - name: mongo-data
               mountPath: /data/db
@@ -32,4 +33,19 @@ spec:
       resources:
         requests:
           storage: {{ .Values.mongo.storage }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  labels:
+    {{- include "cranecloud.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  selector:
+    app: mongo
+  ports:
+    - port: {{ .Values.mongo.port }}
+      name: mongo
+      targetPort: mongo
 {{- end }}

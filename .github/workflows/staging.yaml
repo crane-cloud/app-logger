@@ -88,11 +88,6 @@ jobs:
         with:
           kubeconfig: ${{ secrets.RENU_KUBECONFIG}}
 
-      - name: Install kubectl
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y kubectl
-
       # - name: Add Repo (cranecloud-backend)
       #   run: |
       #     helm repo add cranecloud-backend https://crane-cloud.github.io/helm-charts/
