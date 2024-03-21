@@ -76,4 +76,4 @@ redis:
   create: true
 
 mongo:
-  create: false
+  create: true
