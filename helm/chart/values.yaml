@@ -85,3 +85,8 @@ celery:
     - "python"
     - "run"
   port: 5002
+
+redis:
+  create: false
+  port: 6379
+  storage: 1Gi

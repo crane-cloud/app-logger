@@ -71,3 +71,7 @@ celery:
     - "worker"
     - "--loglevel=info"
   port: 5001
+
+
+redis:
+  create: true
