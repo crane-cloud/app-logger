@@ -7,7 +7,7 @@ metadata:
     {{- include "cranecloud.labels" . | nindent 4 }}
 spec:
   serviceName: redis
-  replicas: 1
+  replicas: {{ .Values.redis.replicas }}
   selector:
     matchLabels:
       app: redis
@@ -20,7 +20,7 @@ spec:
       - name: redis
         image: redis:latest
         ports:
-        - containerPort: {{ .Values.redis.port }}
+        - containerPort: 6379
           name: redis
         volumeMounts:
         - name: redis-data
@@ -33,4 +33,19 @@ spec:
       resources:
         requests:
           storage: {{ .Values.redis.storage }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    {{- include "cranecloud.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  selector:
+    app: redis
+  ports:
+    - port: {{ .Values.redis.port }}
+      name: redis
+      targetPort: redis
 {{- end }}

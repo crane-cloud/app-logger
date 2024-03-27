@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - develop
+      - ft-add-mongo-deployment
 
   workflow_dispatch:
 
@@ -86,11 +87,6 @@ jobs:
       - uses: azure/k8s-set-context@v1
         with:
           kubeconfig: ${{ secrets.RENU_KUBECONFIG}}
-
-      - name: Install kubectl
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y kubectl
 
       # - name: Add Repo (cranecloud-backend)
       #   run: |
