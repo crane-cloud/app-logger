@@ -29,10 +29,14 @@ build-testing-image: ## Build docker image
 
 test:build-testing-image ## Run tests
 	@ ${INFO} "Running tests"
-	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) exec app-logger  poetry run pytest -x -vv --cov=. --cov-report=term-missing
+	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) exec app-logger  poetry run pytest --cov=. --cov-report=term-missing
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) stop app-logger logger-celery-worker logger-mongo-db logger-redis-db 
 
-
+clean: ## Remove all project images and volumes
+	@ ${INFO} "Cleaning your local environment"
+	@ ${INFO} "Note: All ephemeral volumes will be destroyed"
+	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) down --rmi all
+	@ ${INFO} "Clean complete"
 
 # set default target
 .DEFAULT_GOAL := help
