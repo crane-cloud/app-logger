@@ -12,6 +12,8 @@ services:
       MONGO_URI: ${MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/admin}
       REDIS_URL: ${REDIS_URL:-redis://logger-redis-db:6379}
       JWT_SALT: ${JWT_SALT:-salt}
+      TEST_MONGO_URI: ${TEST_MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/admin}
+      TEST_REDIS_URL: ${TEST_REDIS_URL:-redis://logger-redis-db:6379/test}
     ports:
       - "${APP_PORT:-8000}:8000"
     volumes:
@@ -33,6 +35,8 @@ services:
       PYTHONUNBUFFERED: 1
       MONGO_URI: ${MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/admin}
       REDIS_URL: ${REDIS_URL:-redis://logger-redis-db:6379}
+      TEST_MONGO_URI: ${TEST_MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/test_admin}
+      TEST_REDIS_URL: ${TEST_REDIS_URL:-redis://logger-redis-db:6379/test}
       JWT_SALT: ${JWT_SALT:-salt}
     ports:
       - "${CELERY_APP_PORT:-8500}:8000"
@@ -64,14 +68,14 @@ services:
       - "6380:6379"
     volumes:
       - loggerredisdbdata:/data
-  
+
   # Celery dashboard
   logger-flower:
     image: mher/flower
     ports:
       - "5555:5555"
     environment:
-      - CELERY_BROKER_URL=redis://logger-redis-db:6379/0 
+      - CELERY_BROKER_URL=redis://logger-redis-db:6379/0
     depends_on:
       - logger-redis-db
 
