@@ -8,6 +8,7 @@ class BaseConfig:
     CELERY_BROKER_URL: str = os.environ.get("CELERY_BROKER_URL", REDIS_URL)
     CELERY_RESULT_BACKEND: str = os.environ.get(
         "CELERY_RESULT_BACKEND", REDIS_URL)
+    JWT_SALT: str = os.getenv("JWT_SALT",'')
 
 
 class DevelopmentConfig(BaseConfig):
