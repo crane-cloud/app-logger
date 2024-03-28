@@ -10,8 +10,8 @@ from datetime import datetime
 
 
 def get_activities(operation: str, status: str, model: str,
-                         a_project_id: str, a_cluster_id: str, a_db_id: str, a_user_id: str,
-                         a_app_id: str, start: str, end: str) -> List[dict]:
+                   a_project_id: str, a_cluster_id: str, a_db_id: str, a_user_id: str,
+                   a_app_id: str, start: str, end: str) -> List[dict]:
     try:
         filters = {}
         all_filters = []
@@ -60,6 +60,7 @@ def get_activities(operation: str, status: str, model: str,
                             "message": "Internal server error"})
 
 
+# unused controller
 def get_single_activity(activity_id: str):
     try:
         activity = get_collection().find_one({"_id": ObjectId(activity_id)})

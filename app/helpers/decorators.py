@@ -1,9 +1,10 @@
 from jose import JWTError, jwt
 from functools import wraps
 from app.helpers.admin import has_role
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import HTTPException
 from jose.exceptions import JWKError, JWTError
 import os
+from config import settings
 
 
 def authenticate(fn):
@@ -17,8 +18,8 @@ def authenticate(fn):
                 status_code=401, detail="No access token provided")
 
         try:
-            payload = jwt.decode(kwargs['access_token'], os.getenv(
-                "JWT_SALT"), algorithms=['HS256'])
+            jwt.decode(kwargs['access_token'],
+                       settings.JWT_SALT, algorithms=['HS256'])
 
         except JWTError:
             raise HTTPException(
@@ -36,8 +37,8 @@ def admin_required(fn):
     @wraps(fn)
     @authenticate
     def wrapper(*args, **kwargs):
-        payload = jwt.decode(kwargs['access_token'], os.getenv(
-            "JWT_SALT"), algorithms=['HS256'])
+        payload = jwt.decode(kwargs['access_token'],
+                             settings.JWT_SALT, algorithms=['HS256'])
         if (has_role(payload['user_claims']['roles'], "administrator")):
             return fn(*args, **kwargs)
         else:
