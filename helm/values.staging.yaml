@@ -5,54 +5,8 @@ image:
   pullPolicy: Always
   tag: ${{ DOCKER_IMAGE_TAG }}
 
-imagePullSecrets: []
 
 nameOverride: "activity-logger"
-
-serviceAccount:
-  create: false
-  annotations: {}
-  name: ""
-
-podAnnotations: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-service:
-  type: NodePort
-  port: 80
-
-resources: {}
-  # limits:
-  #   cpu: 512m
-  #   memory: 512Mi
-  # requests:
-  #   cpu: 512m
-  #   memory: 512Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
-
-nginxConf:
-  server {
-        listen 80;
-
-        location / {
-            proxy_pass http://localhost:8000/;
-        }
-    }
 
 environment:
   JWT_SALT: ${{ JWT_SALT }}
