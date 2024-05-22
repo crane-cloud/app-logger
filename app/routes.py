@@ -1,12 +1,11 @@
-from fastapi import APIRouter, Body, Header, HTTPException
+from fastapi import APIRouter, Body, Header, HTTPException, Depends
 
 import app.controllers as controllers
 from app.model import Activity
 from fastapi import Query
 from typing import Optional, Annotated
 from app.tasks import add_activity_task, hello
-
-from app.helpers.decorators import admin_required, authenticate
+from app.helpers.auth import JWTBearer
 
 
 router = APIRouter()
@@ -26,9 +25,9 @@ def add_activity(data: Activity = Body(...)):
 
 
 @router.get("/activities")
-@authenticate
+# @authenticate
 def get_activities(
-        access_token: Annotated[str | None, Header()] = None,
+        dependencies=Depends(JWTBearer()),
         operation: Optional[str] = Query(
             None, description="Operation"),
         status: Optional[str] = Query(None, description="Status"),
