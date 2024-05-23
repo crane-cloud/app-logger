@@ -5,16 +5,18 @@ from app.model import Activity
 from bson import json_util
 from bson.objectid import ObjectId
 import json
+from app.helpers.paginater import paginate
 
 from datetime import datetime
 
 
 def get_activities(operation: str, status: str, model: str,
-                         a_project_id: str, a_cluster_id: str, a_db_id: str, a_user_id: str,
-                         a_app_id: str, start: str, end: str) -> List[dict]:
+                   a_project_id: str, a_cluster_id: str, a_db_id: str, a_user_id: str,
+                   a_app_id: str, start: str, end: str, page: int, per_page: int) -> List[dict]:
     try:
         filters = {}
         all_filters = []
+
         if a_project_id:
             all_filters.append({"project_id": a_project_id})
         if a_cluster_id:
@@ -51,8 +53,14 @@ def get_activities(operation: str, status: str, model: str,
         results = get_collection().find(filters)
 
         serialized_results = json.loads(json_util.dumps(results))
+        pagination_meta_data, paginated_items = paginate(
+            serialized_results, per_page=per_page, page=page)
 
-        return serialized_results
+        return dict(
+            status='success',
+            data=dict(pagination=pagination_meta_data,
+                      activity=paginated_items)
+        )
 
     except Exception as e:
         print(e)
