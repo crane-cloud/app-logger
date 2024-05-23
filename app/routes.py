@@ -47,7 +47,6 @@ def get_activities(
         page: int = Query(1, description="Page number", gt=0),
         per_page: int = Query(10, description="Activities per page", gt=0),
 ):
-
     return controllers.get_activities(
         operation=operation,
         status=status,
@@ -61,6 +60,7 @@ def get_activities(
         end=end,
         page=page,
         per_page=per_page,
+        dependencies=dependencies
     )
 
 

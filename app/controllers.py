@@ -6,27 +6,28 @@ from bson import json_util
 from bson.objectid import ObjectId
 import json
 from app.helpers.paginater import paginate
-
+from app.helpers.admin import get_current_user_id
 from datetime import datetime
 
 
 def get_activities(operation: str, status: str, model: str,
                    a_project_id: str, a_cluster_id: str, a_db_id: str, a_user_id: str,
-                   a_app_id: str, start: str, end: str, page: int, per_page: int) -> List[dict]:
+                   a_app_id: str, start: str, end: str, page: int, per_page: int, dependencies: str) -> List[dict]:
     try:
         filters = {}
         all_filters = []
+        user = get_current_user_id(dependencies)
 
         if a_project_id:
             all_filters.append({"project_id": a_project_id})
         if a_cluster_id:
             all_filters.append({"cluster_id": a_cluster_id})
         if a_db_id:
-            all_filters.append({"db_id": a_db_id})
+            all_filters.append({"a_db_id": a_db_id})
         if a_user_id:
-            all_filters.append({"user_id": a_user_id})
+            all_filters.append({"a_user_id": a_user_id})
         if a_app_id:
-            all_filters.append({"app_id": a_app_id})
+            all_filters.append({"a_app_id": a_app_id})
         if status:
             all_filters.append({"status": status})
         if operation:
@@ -47,6 +48,7 @@ def get_activities(operation: str, status: str, model: str,
                 }
             })
 
+        all_filters.append({"user_id": user})
         if all_filters:
             filters["$and"] = all_filters
 
