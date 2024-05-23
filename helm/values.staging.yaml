@@ -5,8 +5,16 @@ image:
   pullPolicy: Always
   tag: ${{ DOCKER_IMAGE_TAG }}
 
-
 nameOverride: "activity-logger"
+
+nginxConf:
+  server {
+        listen 80;
+
+        location / {
+            proxy_pass http://localhost:8000/;
+        }
+    }
 
 environment:
   JWT_SALT: ${{ JWT_SALT }}
