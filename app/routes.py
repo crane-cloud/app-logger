@@ -43,8 +43,10 @@ def get_activities(
         a_app_id: Optional[str] = Query(None, description="App ID"),
         start: Optional[str] = Query(
             None, description="Start date"),
-        end: Optional[str] = Query(None, description="End date")):
-
+        end: Optional[str] = Query(None, description="End date"),
+        page: int = Query(1, description="Page number", gt=0),
+        per_page: int = Query(10, description="Activities per page", gt=0),
+):
     return controllers.get_activities(
         operation=operation,
         status=status,
@@ -55,7 +57,11 @@ def get_activities(
         a_user_id=a_user_id,
         a_app_id=a_app_id,
         start=start,
-        end=end)
+        end=end,
+        page=page,
+        per_page=per_page,
+        dependencies=dependencies
+    )
 
 
 @router.get("/activities/{activity_id}", response_model=Activity)
