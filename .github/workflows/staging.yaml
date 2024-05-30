@@ -88,14 +88,14 @@ jobs:
         with:
           kubeconfig: ${{ secrets.RENU_KUBECONFIG}}
 
-      # - name: Add Repo (cranecloud-backend)
-      #   run: |
-      #     helm repo add cranecloud-backend https://crane-cloud.github.io/helm-charts/
+      - name: Add Repo (cranecloud)
+        run: |
+          helm repo add cranecloud https://crane-cloud.github.io/helm-charts/
 
       - name: Helm Release
         run: |
           helm upgrade --install \
-          activity-logger ./helm/chart \
+          activity-logger cranecloud/cranecloud \
           --values helm/values.staging.yaml \
           --namespace $namespace \
           --set image.tag="${{ needs.build.outputs.tag }}" \

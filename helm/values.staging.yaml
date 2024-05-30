@@ -16,6 +16,8 @@ nginxConf:
         }
     }
 
+port: 8000
+
 environment:
   JWT_SALT: ${{ JWT_SALT }}
   MONGO_URI: ${{ MONGO_URI }}
