@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from fastapi import HTTPException, Query, Depends
 from app.database import get_collection
 from app.model import Activity
@@ -26,6 +26,12 @@ class ActivityQueryParams(BaseModel):
     end: Optional[str] = None
     page: int = Query(1, ge=1)
     per_page: int = Query(10, ge=1)
+
+    operations: Optional[List[str]] = None
+    models: Optional[List[str]] = None
+    statuses: Optional[List[str]] = None
+    user_ids: Optional[List[str]] = None
+    project_ids: Optional[List[str]] = None
 
 
 def get_activities(query_params: ActivityQueryParams, current_user_id: str = Depends(get_current_user_id)) -> dict:
@@ -59,6 +65,17 @@ def get_activities(query_params: ActivityQueryParams, current_user_id: str = Dep
         if query_params.end:
             end_date = datetime.strptime(query_params.end, "%Y-%m-%d")
             filters.setdefault("creation_date", {}).update({"$lte": end_date})
+
+        # multiple filters
+        if query_params.operations:
+            filters["operation"] = {"$in": query_params.operations}
+        if query_params.models:
+            filters["model"] = {"$in": query_params.models}
+        if query_params.statuses:
+            filters["status"] = {"$in": query_params.statuses}
+        if query_params.user_ids:
+            user_id_filter = {"user_id": {"$in": query_params.user_ids}}
+            filters = {"$or": [user_id_filter, filters]}
 
         results = get_collection().find(
             filters).sort("creation_date", -1).skip(
