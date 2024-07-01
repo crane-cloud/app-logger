@@ -6,7 +6,7 @@ from fastapi import Query
 from typing import Optional, Annotated
 from app.tasks import add_activity_task, hello
 from app.helpers.auth import JWTBearer
-
+from app.helpers.admin import get_current_user_id
 
 router = APIRouter()
 
@@ -46,21 +46,44 @@ def get_activities(
         end: Optional[str] = Query(None, description="End date"),
         page: int = Query(1, description="Page number", gt=0),
         per_page: int = Query(10, description="Activities per page", gt=0),
+        general: Optional[bool] = Query(
+            False, description="Get any user activities"),
+        user_id: Optional[str] = Query(None, description="User ID"),
+        #    Multiple fields
+        operations: Optional[list[str]] = Query(
+            None, description="List of operations"),
+        models: Optional[list[str]] = Query(
+            None, description="List of models"),
+        statuses: Optional[list[str]] = Query(
+            None, description="List of statuses"),
+        user_ids: Optional[list[str]] = Query(
+            None, description="List of user IDs"),
+
 ):
+    params = {
+        "operation": operation,
+        "status": status,
+        "model": model,
+        "a_project_id": a_project_id,
+        "a_cluster_id": a_cluster_id,
+        "a_db_id": a_db_id,
+        "a_user_id": a_user_id,
+        "a_app_id": a_app_id,
+        "start": start,
+        "end": end,
+        "page": page,
+        "per_page": per_page,
+        "user_id": user_id,
+        "general": general,
+        # Multiple
+        "operations": operations,
+        "models": models,
+        "statuses": statuses,
+        "user_ids": user_ids,
+    }
+    current_user_id = get_current_user_id(dependencies)
     return controllers.get_activities(
-        operation=operation,
-        status=status,
-        model=model,
-        a_project_id=a_project_id,
-        a_cluster_id=a_cluster_id,
-        a_db_id=a_db_id,
-        a_user_id=a_user_id,
-        a_app_id=a_app_id,
-        start=start,
-        end=end,
-        page=page,
-        per_page=per_page,
-        dependencies=dependencies
+        controllers.ActivityQueryParams(**params), current_user_id=current_user_id
     )
 
 
