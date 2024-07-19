@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Body, Header, HTTPException, Depends
+from datetime import datetime
+from app.database import get_collection
+from fastapi import APIRouter, Body, Depends, Query
 
 import app.controllers as controllers
 from app.model import Activity
-from fastapi import Query
-from typing import Optional, Annotated
+from typing import Optional
 from app.tasks import add_activity_task, hello
 from app.helpers.auth import JWTBearer
 from app.helpers.admin import get_current_user_id
@@ -58,6 +59,8 @@ def get_activities(
             None, description="List of statuses"),
         user_ids: Optional[list[str]] = Query(
             None, description="List of user IDs"),
+        a_tag_ids: Optional[list[str]] = Query(
+            None, description="List of tag IDs"),
 
 ):
     params = {
@@ -80,6 +83,7 @@ def get_activities(
         "models": models,
         "statuses": statuses,
         "user_ids": user_ids,
+        "a_tag_ids": a_tag_ids,
     }
     current_user_id = get_current_user_id(dependencies)
     return controllers.get_activities(
