@@ -32,11 +32,11 @@ class ActivityQueryParams(BaseModel):
     statuses: Optional[List[str]] = None
     user_ids: Optional[List[str]] = None
     project_ids: Optional[List[str]] = None
+    a_tag_ids: Optional[List[str]] = None
 
 
 def get_activities(query_params: ActivityQueryParams, current_user_id: str = Depends(get_current_user_id)) -> dict:
     try:
-        print(query_params)
         filters = {"user_id": current_user_id}
         if query_params.general:
             del filters["user_id"]
@@ -73,10 +73,11 @@ def get_activities(query_params: ActivityQueryParams, current_user_id: str = Dep
             filters["model"] = {"$in": query_params.models}
         if query_params.statuses:
             filters["status"] = {"$in": query_params.statuses}
+        if query_params.a_tag_ids:
+            filters["a_tag_ids"] = {"$in": query_params.a_tag_ids}
         if query_params.user_ids:
             user_id_filter = {"user_id": {"$in": query_params.user_ids}}
             filters = {"$or": [user_id_filter, filters]}
-
         results = get_collection().find(
             filters).sort("creation_date", -1).skip(
                 query_params.per_page * (query_params.page - 1)).limit(query_params.per_page)
