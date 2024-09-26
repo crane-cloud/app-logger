@@ -77,7 +77,8 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      namespace: cranecloud-microservice
+      # namespace: cranecloud-microservice
+      namespace: cranecloud
       image: cranecloud/activity-logger
 
     steps:
