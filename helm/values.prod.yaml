@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: cranecloud/activity-logger
+  repository: gcr.io/crane-cloud-274413/activity-logger
   pullPolicy: Always
   tag: ${{ DOCKER_IMAGE_TAG }}
 
@@ -25,7 +25,7 @@ service:
 
 environment:
   JWT_SALT: ${{ JWT_SALT }}
-  MONGO_URI: ${{ MONGO_URI }}
+  MONGO_URI: mongo:27017
   FASTAPI_ENV: production
   REDIS_URL: redis://redis:6379
 
