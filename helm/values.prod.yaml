@@ -1,0 +1,48 @@
+replicaCount: 1
+
+image:
+  repository: gcr.io/crane-cloud-274413/activity-logger
+  pullPolicy: Always
+  tag: ${{ DOCKER_IMAGE_TAG }}
+
+nameOverride: "activity-logger"
+
+nginxConf:
+  server {
+        listen 80;
+        server_name localhost;
+        location / {
+            proxy_pass http://localhost:8000/;
+            proxy_set_header Host "localhost";
+        }
+    }
+
+port: 8000
+
+service:
+  type: NodePort
+  port: 80
+
+environment:
+  JWT_SALT: ${{ JWT_SALT }}
+  MONGO_URI: mongo:27017
+  FASTAPI_ENV: production
+  REDIS_URL: redis://redis:6379
+
+celery:
+  create: true
+  command: 
+    - "poetry"
+    - "run"
+    - "celery"
+    - "-A"
+    - "main.celery"
+    - "worker"
+    - "--loglevel=info"
+  port: 5001
+
+redis:
+  create: false
+
+mongo:
+  create: true
