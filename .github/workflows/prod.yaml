@@ -6,9 +6,6 @@ on:
     types:
       - released
       - prereleased
-  push:
-    branches:
-      - deploy/gcp
 
 jobs:
   build:
@@ -22,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: deploy/gcp # Reference branch
+          ref: main # Reference branch
 
       - name: Install (Buildx)
         uses: docker/setup-buildx-action@v3
