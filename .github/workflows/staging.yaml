@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - develop
+      - deploy/gcp
 
   workflow_dispatch:
 
