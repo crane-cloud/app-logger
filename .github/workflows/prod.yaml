@@ -130,4 +130,4 @@ jobs:
 
       - name: Monitor Rollout
         run: |
-          kubectl rollout status deployment/database-api --timeout=300s --namespace $namespace
+          kubectl rollout status deployment/activity-logger --timeout=300s --namespace $namespace
