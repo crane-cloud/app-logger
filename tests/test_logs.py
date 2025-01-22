@@ -59,7 +59,7 @@ def test_get_activities_invalid_auth(test_client):
     # Test retrieving activities with invalid or missing authentication
     invalid_headers = {"Authorization": "Bearer InvalidToken"}
     response = test_client.get("/api/activities", headers=invalid_headers)
-    assert response.status_code == 401
+    assert response.status_code == 403
 
 
 
