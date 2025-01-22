@@ -88,5 +88,5 @@ volumes:
 
 networks:
   cranecloud:
-    external: false
+    external: true
     name: cranecloud_default

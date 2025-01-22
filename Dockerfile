@@ -2,8 +2,6 @@ FROM python:3.10
 
 WORKDIR /app
 
-ARG FASTAPI_ENV='development'
-
 ENV DEBIAN_FRONTEND='noninteractive'
 
 RUN apt-get update && apt install -y curl

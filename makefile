@@ -28,6 +28,7 @@ build-testing-image: ## Build docker image
 	@ echo " "
 
 test:build-testing-image ## Run tests
+    @ docker network create cranecloud_default
 	@ ${INFO} "Running tests"
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) exec app-logger  poetry run pytest --cov=. --cov-report=term-missing
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) stop app-logger logger-celery-worker logger-mongo-db logger-redis-db 
