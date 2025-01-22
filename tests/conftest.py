@@ -38,11 +38,11 @@ def get_headers():
             "roles": [
                 {
                     "name": "administrator",
-                    "id": "test_id"
+                    "id": "testuserID"
                 }
             ],
             "email": 'test@gmail.com'
         }
     }
     token = jwt.encode(token_payload, JWT_SALT, algorithm="HS256")
-    return {"access-token": token}
+    return {"Authorization": f"Bearer {token}"}
