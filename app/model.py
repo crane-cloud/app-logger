@@ -1,6 +1,5 @@
 from typing import Optional
 from pydantic import BaseModel
-import datetime
 from fastapi import Query
 from pydantic import BaseModel, EmailStr
 
@@ -19,6 +18,7 @@ class Activity(BaseModel):
     a_app_id: Optional[str] = None
     a_project_id: Optional[str] = None
     a_cluster_id: Optional[str] = None
+    a_tag_ids: Optional[list[str]] = None
 
 
 class ActivityGetResponse(BaseModel):

@@ -6,6 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: app-logger
+    networks:
+      - cranecloud
+      - default
     environment:
       PYTHONDONTWRITEBYTECODE: 1
       PYTHONUNBUFFERED: 1
@@ -82,3 +85,8 @@ services:
 volumes:
   logger-mongo-data:
   loggerredisdbdata:
+
+networks:
+  cranecloud:
+    external: true
+    name: cranecloud_default

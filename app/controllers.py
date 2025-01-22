@@ -1,58 +1,99 @@
-from typing import List
-from fastapi import HTTPException
+from typing import Optional, List
+from fastapi import HTTPException, Query, Depends
 from app.database import get_collection
 from app.model import Activity
 from bson import json_util
 from bson.objectid import ObjectId
 import json
-
+from app.helpers.paginater import paginate
+from app.helpers.admin import get_current_user_id
 from datetime import datetime
+from pydantic import BaseModel
 
 
-def get_activities(operation: str, status: str, model: str,
-                   a_project_id: str, a_cluster_id: str, a_db_id: str, a_user_id: str,
-                   a_app_id: str, start: str, end: str) -> List[dict]:
+class ActivityQueryParams(BaseModel):
+    operation: Optional[str] = None
+    user_id: Optional[str] = None
+    status: Optional[str] = None
+    model: Optional[str] = None
+    general: Optional[bool] = False
+    a_project_id: Optional[str] = None
+    a_cluster_id: Optional[str] = None
+    a_db_id: Optional[str] = None
+    a_user_id: Optional[str] = None
+    a_app_id: Optional[str] = None
+    start: Optional[str] = None
+    end: Optional[str] = None
+    page: int = Query(1, ge=1)
+    per_page: int = Query(10, ge=1)
+
+    operations: Optional[List[str]] = None
+    models: Optional[List[str]] = None
+    statuses: Optional[List[str]] = None
+    user_ids: Optional[List[str]] = None
+    project_ids: Optional[List[str]] = None
+    a_tag_ids: Optional[List[str]] = None
+
+
+def get_activities(query_params: ActivityQueryParams, current_user_id: str = Depends(get_current_user_id)) -> dict:
     try:
-        filters = {}
-        all_filters = []
-        if a_project_id:
-            all_filters.append({"project_id": a_project_id})
-        if a_cluster_id:
-            all_filters.append({"cluster_id": a_cluster_id})
-        if a_db_id:
-            all_filters.append({"db_id": a_db_id})
-        if a_user_id:
-            all_filters.append({"user_id": a_user_id})
-        if a_app_id:
-            all_filters.append({"app_id": a_app_id})
-        if status:
-            all_filters.append({"status": status})
-        if operation:
-            all_filters.append({"operation": operation})
-        if model:
-            all_filters.append({"model": model})
+        filters = {"user_id": current_user_id}
+        if query_params.general:
+            del filters["user_id"]
+        if query_params.user_id and query_params.general:
+            filters["user_id"] = query_params.user_id
+        if query_params.operation:
+            filters["operation"] = query_params.operation
+        if query_params.status:
+            filters["status"] = query_params.status
+        if query_params.model:
+            filters["model"] = query_params.model
+        if query_params.a_project_id:
+            filters["a_project_id"] = query_params.a_project_id
+        if query_params.a_cluster_id:
+            filters["a_cluster_id"] = query_params.a_cluster_id
+        if query_params.a_db_id:
+            filters["a_db_id"] = query_params.a_db_id
+        if query_params.a_user_id:
+            filters["a_user_id"] = query_params.a_user_id
+        if query_params.a_app_id:
+            filters["a_app_id"] = query_params.a_app_id
+        if query_params.start:
+            start_date = datetime.strptime(query_params.start, "%Y-%m-%d")
+            filters.setdefault("creation_date", {}).update(
+                {"$gte": start_date})
+        if query_params.end:
+            end_date = datetime.strptime(query_params.end, "%Y-%m-%d")
+            filters.setdefault("creation_date", {}).update({"$lte": end_date})
 
-        if start:
-            all_filters.append({
-                "creation_date": {
-                    "$gte": datetime.strptime(start, "%Y-%m-%d")
-                }
-            })
-        if end:
-            all_filters.append({
-                "creation_date": {
-                    "$lte": datetime.strptime(end, "%Y-%m-%d")
-                }
-            })
+        # multiple filters
+        if query_params.operations:
+            filters["operation"] = {"$in": query_params.operations}
+        if query_params.models:
+            filters["model"] = {"$in": query_params.models}
+        if query_params.statuses:
+            filters["status"] = {"$in": query_params.statuses}
+        if query_params.a_tag_ids:
+            filters["a_tag_ids"] = {"$in": query_params.a_tag_ids}
+        if query_params.user_ids:
+            user_id_filter = {"user_id": {"$in": query_params.user_ids}}
+            filters = {"$or": [user_id_filter, filters]}
+        results = get_collection().find(
+            filters).sort("creation_date", -1).skip(
+                query_params.per_page * (query_params.page - 1)).limit(query_params.per_page)
 
-        if all_filters:
-            filters["$and"] = all_filters
+        serialized_results = [json.loads(
+            json_util.dumps(result)) for result in results]
+        pagination_meta_data, paginated_items = paginate(
+            serialized_results, per_page=query_params.per_page, page=query_params.page)
 
-        results = get_collection().find(filters)
-
-        serialized_results = json.loads(json_util.dumps(results))
-
-        return serialized_results
+        return {
+            "status": "success",
+            "data": {
+                "pagination": pagination_meta_data,
+                "activity": paginated_items
+            }
+        }
 
     except Exception as e:
         print(e)
