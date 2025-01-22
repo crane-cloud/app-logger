@@ -20,6 +20,7 @@ connect-to-container:build-image ## Connect to a container
 
 build-testing-image: ## Build docker image
 	@ ${INFO} "Building testing docker images"
+	@ docker network inspect cranecloud_default >/dev/null 2>&1 || docker network create cranecloud_default
 	@ export FASTAPI_ENV='testing' 
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) build --build-arg FASTAPI_ENV=testing app-logger 
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) up -d app-logger logger-celery-worker logger-mongo-db logger-redis-db
@@ -29,7 +30,6 @@ build-testing-image: ## Build docker image
 
 test:build-testing-image ## Run tests
 	@ ${INFO} "Running tests"
-	@ docker network create cranecloud_default
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) exec app-logger  poetry run pytest --cov=. --cov-report=term-missing
 	@ docker compose -f $(DOCKER_DEV_COMPOSE_FILE) stop app-logger logger-celery-worker logger-mongo-db logger-redis-db 
 
