@@ -8,7 +8,8 @@ class BaseConfig:
     CELERY_BROKER_URL: str = os.environ.get("CELERY_BROKER_URL", REDIS_URL)
     CELERY_RESULT_BACKEND: str = os.environ.get(
         "CELERY_RESULT_BACKEND", REDIS_URL)
-    JWT_SALT: str = os.getenv("JWT_SALT",'')
+    JWT_SALT: str = os.getenv("JWT_SALT", '')
+    FASTAPI_ENV: str = os.getenv("FASTAPI_ENV", "development")
 
 
 class DevelopmentConfig(BaseConfig):
@@ -18,6 +19,7 @@ class DevelopmentConfig(BaseConfig):
 
 
 class ProductionConfig(BaseConfig):
+    FASTAPI_ENV = "production"
     pass
 
 
@@ -26,7 +28,7 @@ class TestingConfig(BaseConfig):
         "TEST_MONGO_URI", "mongodb://localhost:27017/")
     REDIS_URL = os.getenv("TEST_REDIS_URL", "redis://localhost:6379")
     FASTAPI_ENV = "testing"
-    
+
 
 @lru_cache()
 def get_settings():
