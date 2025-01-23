@@ -101,6 +101,7 @@ def get_activities(query_params: ActivityQueryParams, current_user_id: str = Dep
                             "message": "Internal server error"})
 
 
+# unused controller
 def get_single_activity(activity_id: str):
     try:
         activity = get_collection().find_one({"_id": ObjectId(activity_id)})

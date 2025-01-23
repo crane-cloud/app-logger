@@ -15,6 +15,8 @@ services:
       MONGO_URI: ${MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/admin}
       REDIS_URL: ${REDIS_URL:-redis://logger-redis-db:6379}
       JWT_SALT: ${JWT_SALT:-salt}
+      TEST_MONGO_URI: ${TEST_MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/admin}
+      TEST_REDIS_URL: ${TEST_REDIS_URL:-redis://logger-redis-db:6379/test}
     ports:
       - "${APP_PORT:-8000}:8000"
     volumes:
@@ -36,6 +38,8 @@ services:
       PYTHONUNBUFFERED: 1
       MONGO_URI: ${MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/admin}
       REDIS_URL: ${REDIS_URL:-redis://logger-redis-db:6379}
+      TEST_MONGO_URI: ${TEST_MONGO_URI:-mongodb://crane-logger:password@logger-mongo-db:27017/test_admin}
+      TEST_REDIS_URL: ${TEST_REDIS_URL:-redis://logger-redis-db:6379/test}
       JWT_SALT: ${JWT_SALT:-salt}
     ports:
       - "${CELERY_APP_PORT:-8500}:8000"
@@ -64,7 +68,7 @@ services:
     image: redis:latest
     container_name: logger-redis-db
     ports:
-      - "6380:6379"
+      - "6379:6379"
     volumes:
       - loggerredisdbdata:/data
 
