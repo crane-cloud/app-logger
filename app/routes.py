@@ -6,6 +6,8 @@ import app.controllers as controllers
 from app.model import Activity
 from typing import Optional
 from app.tasks import add_activity_task, hello
+
+# from app.helpers.decorators import admin_required, authenticate
 from app.helpers.auth import JWTBearer
 from app.helpers.admin import get_current_user_id
 
@@ -91,6 +93,7 @@ def get_activities(
     )
 
 
+# unused route
 @router.get("/activities/{activity_id}", response_model=Activity)
 def get_activity(activity_id: str) -> Activity:
     return controllers.get_single_activity(activity_id)

@@ -1,5 +1,6 @@
 from jose import JWTError, jwt
 import os
+from config import settings
 
 
 def has_role(role_list: list, role_name: str) -> bool:
