@@ -24,12 +24,10 @@ incorrect_activity_data_type = {
 }
 
 
-
-
 def test_index(test_client):
     response = test_client.get("/api/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Hello, world"}
+    assert response.json() == {"message": "Welcome to Logger API"}
 
 
 def test_add_activity(test_client):
@@ -44,7 +42,7 @@ def test_add_activity_missing_fields(test_client):
     invalid_activity_data = {key: value for key,
                              value in activity_data.items() if key != "user_id"}
     response = test_client.post("/api/activities", json=invalid_activity_data)
-    assert response.status_code == 422  
+    assert response.status_code == 422
 
 
 def test_get_activities(test_client):
@@ -62,7 +60,5 @@ def test_get_activities_invalid_auth(test_client):
     assert response.status_code == 403
 
 
-
 def test_get_activities_filtering(test_client):
     pass
-
