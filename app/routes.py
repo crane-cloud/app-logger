@@ -13,8 +13,10 @@ from app.helpers.admin import get_current_user_id
 
 router = APIRouter()
 
+homeRouter = APIRouter()
 
-@router.get("/")
+
+@homeRouter.get("/")
 async def index():
     hello.delay()
     return {"message": "Hello, world"}
