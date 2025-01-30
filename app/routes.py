@@ -13,11 +13,18 @@ from app.helpers.admin import get_current_user_id
 
 router = APIRouter()
 
+homeRouter = APIRouter()
+
+
+@homeRouter.get("/")
+async def home():
+    return {"message": "Welcome to Logger API"}
+
 
 @router.get("/")
 async def index():
     hello.delay()
-    return {"message": "Hello, world"}
+    return {"message": "Welcome to Logger API"}
 
 
 @router.post("/activities")
