@@ -2,6 +2,9 @@
 name: Prod
 
 on:
+  push:
+    branches:
+      - ch-update-prod-deployment
   release:
     types:
       - released
@@ -14,6 +17,8 @@ jobs:
       tag: ${{ steps.export.outputs.tag }}
 
     runs-on: ubuntu-latest
+    env:
+      image: cranecloud/activity-logger
 
     steps:
       - name: Checkout
@@ -24,19 +29,11 @@ jobs:
       - name: Install (Buildx)
         uses: docker/setup-buildx-action@v3
 
-      - name: Login (GCP)
-        uses: google-github-actions/auth@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
         with:
-          credentials_json: ${{ secrets.CREDENTIALS_JSON }}
-
-      - name: Install (Gcloud)
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: crane-cloud-274413
-          install_components: "gke-gcloud-auth-plugin"
-
-      - name: Login (GCR)
-        run: gcloud auth configure-docker
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - id: meta
         name: Tag
@@ -44,7 +41,7 @@ jobs:
         with:
           flavor: |
             latest=true
-          images: gcr.io/crane-cloud-274413/activity-logger
+          images: ${{ env.image }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -53,19 +50,18 @@ jobs:
             type=sha
 
       - name: Build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           context: .
-          file: Dockerfile
           labels: ${{ steps.meta.outputs.labels }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 
       - id: export
         name: Export
-        uses: actions/github-script@v5
+        uses: actions/github-script@v7
         with:
           script: |
             const metadata = JSON.parse(`${{ steps.meta.outputs.json }}`)
@@ -90,8 +86,8 @@ jobs:
       namespace: cranecloud-prod
 
     steps:
-      - name: Clone
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Login (GCP)
         uses: google-github-actions/auth@v2
@@ -99,13 +95,13 @@ jobs:
           credentials_json: ${{ secrets.CREDENTIALS_JSON }}
 
       - name: Install (Gcloud)
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: crane-cloud-274413
           install_components: "gke-gcloud-auth-plugin"
 
       - name: Login (Kubernetes Cluster)
-        uses: google-github-actions/get-gke-credentials@v1
+        uses: google-github-actions/get-gke-credentials@v2
         with:
           cluster_name: staging-cluster
           location: us-central1-a
