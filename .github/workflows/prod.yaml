@@ -2,6 +2,9 @@
 name: Prod
 
 on:
+  push:
+    branches:
+      - ch-update-prod-deployment
   release:
     types:
       - released
