@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: gcr.io/crane-cloud-274413/activity-logger
+  repository: cranecloud/activity-logger
   pullPolicy: Always
   tag: ${{ DOCKER_IMAGE_TAG }}
 
@@ -42,7 +42,7 @@ celery:
   port: 5001
 
 redis:
-  create: false
+  create: true
 
 mongo:
   create: true
