@@ -42,7 +42,7 @@ celery:
   port: 5001
 
 redis:
-  create: false
+  create: true
 
 mongo:
   create: true

@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - develop
-      - ch-change-deployment
 
   workflow_dispatch:
 
